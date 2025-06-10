@@ -1,0 +1,32 @@
+{% extends 'common/base.html' %}
+
+{% load static %}
+{% block content %}
+<!-- Starts Main Section -->
+<main>
+    <div class="container">
+        <div class="col-9">
+
+            <!-- Start Searchbar Form -->
+            <form class="searchbar">
+                {{ search_form }}
+                <button>
+                    <img src="{% static 'images/search.png' %}" height="18" alt="img2">
+                </button>
+            </form>
+            <!-- End Searchbar Form -->
+
+            <!-- Start Pet Photos Post Section -->
+            <!-- Start First Pet Photo Post -->
+            {% for photo in all_photos %}
+                {% include 'common/pet-post.html' %}
+            {% endfor %}
+            <!-- End First Pet Photo Post -->
+
+            <!-- End Pet Photos Post Section -->
+
+        </div>
+    </div>
+</main>
+<!-- End Main Section -->
+{% endblock %}

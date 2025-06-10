@@ -1,0 +1,21 @@
+{% extends 'common/base.html' %}
+
+
+{% load static %}
+{% block content %}
+
+<!-- Starts Main Section -->
+<main>
+    <div class="container">
+        <div class="col-9">
+
+            <!-- Start Pet Photo Post Section -->
+            {% include 'common/pet-post.html' with editable=True%}
+            <!-- End Pet Photo Post Section -->
+
+        </div>
+    </div>
+
+</main>
+<!-- End Main Section -->
+{% endblock %}
