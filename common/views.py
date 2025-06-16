@@ -1,5 +1,6 @@
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, redirect, resolve_url
+from django.views.generic import TemplateView, ListView
 from pyperclip import copy
 
 from common.forms import CommentForm, SearchForm
@@ -8,25 +9,48 @@ from photos.models import Photo
 
 
 # Create your views here.
-def home_page(request):
 
-    comment_form = CommentForm()
-    search_form = SearchForm(request.GET or None)
+class HomePageView(ListView):
+    model = Photo
+    template_name = 'common/home-page.html'
+    context_object_name = 'all_photos'
+    paginate_by = 3
 
-    if search_form.is_valid():
-        all_photos = Photo.objects.prefetch_related('tagged_pets', 'like_set').filter(
-            tagged_pets__name__icontains=search_form.cleaned_data.get('text', '')
-        )
-    else:
-        all_photos = Photo.objects.prefetch_related('tagged_pets', 'like_set').all()
+    def get_context_data(self, *, object_list=None,  **kwargs):
+        kwargs.update({
+            "comment_form": CommentForm(),
+            "search_form": SearchForm(),
+        })
+        return super().get_context_data(object_list=object_list, **kwargs)
 
-    context = {
-        "all_photos": all_photos,
-        "comment_form": comment_form,
-        'search_form': search_form,
-    }
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        pet_name = self.request.GET.get('text')
 
-    return render(request, 'common/home-page.html', context)
+        if pet_name:
+            queryset = queryset.prefetch_related('tagged_pets', 'like_set').filter(
+                tagged_pets__name__icontains=pet_name)
+
+        return queryset
+# def home_page(request):
+#
+#     comment_form = CommentForm()
+#     search_form = SearchForm(request.GET or None)
+#
+#     if search_form.is_valid():
+#         all_photos = Photo.objects.prefetch_related('tagged_pets', 'like_set').filter(
+#             tagged_pets__name__icontains=search_form.cleaned_data.get('text', '')
+#         )
+#     else:
+#         all_photos = Photo.objects.prefetch_related('tagged_pets', 'like_set').all()
+#
+#     context = {
+#         "all_photos": all_photos,
+#         "comment_form": comment_form,
+#         'search_form': search_form,
+#     }
+#
+#     return render(request, 'common/home-page.html', context)
 
 
 def like(request: HttpRequest, photo_id: int) -> HttpResponse:
